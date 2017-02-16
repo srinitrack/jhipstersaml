@@ -164,7 +164,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         // @formatter:off
-        http.httpBasic()
+        http
+        	.httpBasic()
             .disable()
             .csrf()
             .disable()
@@ -191,8 +192,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and()
                 .keyManager() //(6)
                 .privateKeyDERLocation("classpath:/localhost.key.der")
-                .publicKeyPEMLocation("classpath:/localhost.cert");
-        http
+                .publicKeyPEMLocation("classpath:/localhost.cert")
+             .and()
+        .http()
             .authorizeRequests()
             .requestMatchers(saml().endpointsMatcher())
             .permitAll()
