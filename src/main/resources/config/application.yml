@@ -98,3 +98,5 @@ jhipster:
 # ===================================================================
 
 application:
+
+logging.level.org.springframework.security.saml: DEBUG
