@@ -6,8 +6,10 @@ import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -17,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.web.filter.CorsFilter;
+
+import com.github.ulisesbocchio.spring.boot.security.saml.bean.SAMLConfigurerBean;
 
 import io.github.jhipster.config.JHipsterProperties;
 import io.github.jhipster.security.AjaxAuthenticationFailureHandler;
@@ -145,6 +149,59 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //            .antMatchers("/swagger-ui/index.html").hasAuthority(AuthoritiesConstants.ADMIN);
 //
 //    }
+    
+    @Bean
+    SAMLConfigurerBean saml() {
+        return new SAMLConfigurerBean();
+    }
+
+    @Override
+	@Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        // @formatter:off
+        http.httpBasic()
+            .disable()
+            .csrf()
+            .disable()
+            .anonymous()
+        .and()
+            .apply(saml())
+            .serviceProvider()
+                .metadataGenerator() //(1)
+                .entityId("localhost-demo")
+            .and()
+                .sso() //(2)
+                .defaultSuccessURL("/home")
+                .idpSelectionPageURL("/idpselection")
+            .and()
+                .logout() //(3)
+                .defaultTargetURL("/")
+            .and()
+                .metadataManager() //(4)
+                .metadataLocations("classpath:/idp-ssocircle.xml")
+                .refreshCheckInterval(0)
+            .and()
+                .extendedMetadata() //(5)
+                .idpDiscoveryEnabled(true)
+            .and()
+                .keyManager() //(6)
+                .privateKeyDERLocation("classpath:/localhost.key.der")
+                .publicKeyPEMLocation("classpath:/localhost.cert");
+        http
+            .authorizeRequests()
+            .requestMatchers(saml().endpointsMatcher())
+            .permitAll()
+        .and()
+            .authorizeRequests()
+            .anyRequest()
+            .authenticated();
+        // @formatter:on
+    }
 
     @Bean
     public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
