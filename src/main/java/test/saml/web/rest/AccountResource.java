@@ -1,5 +1,29 @@
 package test.saml.web.rest;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.List;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.codahale.metrics.annotation.Timed;
 
 import test.saml.domain.PersistentToken;
@@ -10,24 +34,8 @@ import test.saml.security.SecurityUtils;
 import test.saml.service.MailService;
 import test.saml.service.UserService;
 import test.saml.service.dto.UserDTO;
-import test.saml.web.rest.vm.KeyAndPasswordVM;
-import test.saml.web.rest.vm.ManagedUserVM;
 import test.saml.web.rest.util.HeaderUtil;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.*;
+import test.saml.web.rest.vm.ManagedUserVM;
 
 /**
  * REST controller for managing the current user's account.
@@ -213,16 +221,16 @@ public class AccountResource {
      * @param mail the mail of the user
      * @return the ResponseEntity with status 200 (OK) if the e-mail was sent, or status 400 (Bad Request) if the e-mail address is not registered
      */
-    @PostMapping(path = "/account/reset_password/init",
-        produces = MediaType.TEXT_PLAIN_VALUE)
-    @Timed
-    public ResponseEntity requestPasswordReset(@RequestBody String mail) {
-        return userService.requestPasswordReset(mail)
-            .map(user -> {
-                mailService.sendPasswordResetMail(user);
-                return new ResponseEntity<>("e-mail was sent", HttpStatus.OK);
-            }).orElse(new ResponseEntity<>("e-mail address not registered", HttpStatus.BAD_REQUEST));
-    }
+//    @PostMapping(path = "/account/reset_password/init",
+//        produces = MediaType.TEXT_PLAIN_VALUE)
+//    @Timed
+//    public ResponseEntity requestPasswordReset(@RequestBody String mail) {
+//        return userService.requestPasswordReset(mail)
+//            .map(user -> {
+//                mailService.sendPasswordResetMail(user);
+//                return new ResponseEntity<>("e-mail was sent", HttpStatus.OK);
+//            }).orElse(new ResponseEntity<>("e-mail address not registered", HttpStatus.BAD_REQUEST));
+//    }
 
     /**
      * POST   /account/reset_password/finish : Finish to reset the password of the user
@@ -231,17 +239,17 @@ public class AccountResource {
      * @return the ResponseEntity with status 200 (OK) if the password has been reset,
      * or status 400 (Bad Request) or 500 (Internal Server Error) if the password could not be reset
      */
-    @PostMapping(path = "/account/reset_password/finish",
-        produces = MediaType.TEXT_PLAIN_VALUE)
-    @Timed
-    public ResponseEntity<String> finishPasswordReset(@RequestBody KeyAndPasswordVM keyAndPassword) {
-        if (!checkPasswordLength(keyAndPassword.getNewPassword())) {
-            return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
-        }
-        return userService.completePasswordReset(keyAndPassword.getNewPassword(), keyAndPassword.getKey())
-              .map(user -> new ResponseEntity<String>(HttpStatus.OK))
-              .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
-    }
+//    @PostMapping(path = "/account/reset_password/finish",
+//        produces = MediaType.TEXT_PLAIN_VALUE)
+//    @Timed
+//    public ResponseEntity<String> finishPasswordReset(@RequestBody KeyAndPasswordVM keyAndPassword) {
+//        if (!checkPasswordLength(keyAndPassword.getNewPassword())) {
+//            return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
+//        }
+//        return userService.completePasswordReset(keyAndPassword.getNewPassword(), keyAndPassword.getKey())
+//              .map(user -> new ResponseEntity<String>(HttpStatus.OK))
+//              .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+//    }
 
     private boolean checkPasswordLength(String password) {
         return (!StringUtils.isEmpty(password) &&

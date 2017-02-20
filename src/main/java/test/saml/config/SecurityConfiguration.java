@@ -1,113 +1,106 @@
 package test.saml.config;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
-import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.web.filter.CorsFilter;
 
 import com.github.ulisesbocchio.spring.boot.security.saml.bean.SAMLConfigurerBean;
 
-import io.github.jhipster.config.JHipsterProperties;
-import io.github.jhipster.security.AjaxAuthenticationFailureHandler;
-import io.github.jhipster.security.AjaxAuthenticationSuccessHandler;
-import io.github.jhipster.security.AjaxLogoutSuccessHandler;
-import io.github.jhipster.security.Http401UnauthorizedEntryPoint;
-
 @Configuration
-@EnableWebSecurity
+//@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+//    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+//
+//    private final UserDetailsService userDetailsService;
+//
+//    private final JHipsterProperties jHipsterProperties;
+//
+//    private final RememberMeServices rememberMeServices;
+//
+//    private final CorsFilter corsFilter;
+//
+//    public SecurityConfiguration(AuthenticationManagerBuilder authenticationManagerBuilder, UserDetailsService userDetailsService,
+//        JHipsterProperties jHipsterProperties, RememberMeServices rememberMeServices,
+//        CorsFilter corsFilter) {
+//
+//        this.authenticationManagerBuilder = authenticationManagerBuilder;
+//        this.userDetailsService = userDetailsService;
+//        this.jHipsterProperties = jHipsterProperties;
+//        this.rememberMeServices = rememberMeServices;
+//        this.corsFilter = corsFilter;
+//    }
 
-    private final UserDetailsService userDetailsService;
+//    @PostConstruct
+//    public void init() {
+//        try {
+//            authenticationManagerBuilder
+//                .userDetailsService(userDetailsService)
+//                    .passwordEncoder(passwordEncoder());
+//        } catch (Exception e) {
+//            throw new BeanInitializationException("Security configuration failed", e);
+//        }
+//    }
 
-    private final JHipsterProperties jHipsterProperties;
+//    @Bean
+//    public AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler() {
+//        return new AjaxAuthenticationSuccessHandler();
+//    }
+//
+//    @Bean
+//    public AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler() {
+//        return new AjaxAuthenticationFailureHandler();
+//    }
+//
+//    @Bean
+//    public AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler() {
+//        return new AjaxLogoutSuccessHandler();
+//    }
+//
+//    @Bean
+//    public Http401UnauthorizedEntryPoint http401UnauthorizedEntryPoint() {
+//        return new Http401UnauthorizedEntryPoint();
+//    }
 
-    private final RememberMeServices rememberMeServices;
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
-    private final CorsFilter corsFilter;
-
-    public SecurityConfiguration(AuthenticationManagerBuilder authenticationManagerBuilder, UserDetailsService userDetailsService,
-        JHipsterProperties jHipsterProperties, RememberMeServices rememberMeServices,
-        CorsFilter corsFilter) {
-
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.userDetailsService = userDetailsService;
-        this.jHipsterProperties = jHipsterProperties;
-        this.rememberMeServices = rememberMeServices;
-        this.corsFilter = corsFilter;
-    }
-
-    @PostConstruct
-    public void init() {
-        try {
-            authenticationManagerBuilder
-                .userDetailsService(userDetailsService)
-                    .passwordEncoder(passwordEncoder());
-        } catch (Exception e) {
-            throw new BeanInitializationException("Security configuration failed", e);
-        }
-    }
-
+//    @Override
+//    public void configure(WebSecurity web) throws Exception {
+//        web.ignoring()
+//            .antMatchers(HttpMethod.OPTIONS, "/**")
+//            .antMatchers("/app/**/*.{js,html}")
+//            .antMatchers("/bower_components/**")
+//            .antMatchers("/i18n/**")
+//            .antMatchers("/content/**")
+//            .antMatchers("/swagger-ui/index.html")
+//            .antMatchers("/test/**")
+//            .antMatchers("/h2-console/**");
+//    }
+    
     @Bean
-    public AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler() {
-        return new AjaxAuthenticationSuccessHandler();
+    SAMLConfigurerBean saml() {
+        return new SAMLConfigurerBean();
     }
 
-    @Bean
-    public AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler() {
-        return new AjaxAuthenticationFailureHandler();
-    }
-
-    @Bean
-    public AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler() {
-        return new AjaxLogoutSuccessHandler();
-    }
-
-    @Bean
-    public Http401UnauthorizedEntryPoint http401UnauthorizedEntryPoint() {
-        return new Http401UnauthorizedEntryPoint();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+	@Override
+	@Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-            .antMatchers(HttpMethod.OPTIONS, "/**")
-            .antMatchers("/app/**/*.{js,html}")
-            .antMatchers("/bower_components/**")
-            .antMatchers("/i18n/**")
-            .antMatchers("/content/**")
-            .antMatchers("/swagger-ui/index.html")
-            .antMatchers("/test/**")
-            .antMatchers("/h2-console/**");
-    }
-
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
+    public void configure(HttpSecurity http) throws Exception {
 //        http
 //            .csrf()
 //            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//            .ignoringAntMatchers("/saml/**")
 //        .and()
 //            .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
 //            .exceptionHandling()
@@ -134,42 +127,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //            .headers()
 //            .frameOptions()
 //            .disable()
-//        .and()
-//            .authorizeRequests()
-//            .antMatchers("/api/register").permitAll()
-//            .antMatchers("/api/activate").permitAll()
-//            .antMatchers("/api/authenticate").permitAll()
-//            .antMatchers("/api/account/reset_password/init").permitAll()
-//            .antMatchers("/api/account/reset_password/finish").permitAll()
-//            .antMatchers("/api/profile-info").permitAll()
-//            .antMatchers("/api/**").authenticated()
-//            .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
-//            .antMatchers("/v2/api-docs/**").permitAll()
-//            .antMatchers("/swagger-resources/configuration/ui").permitAll()
-//            .antMatchers("/swagger-ui/index.html").hasAuthority(AuthoritiesConstants.ADMIN);
-//
-//    }
-    
-    @Bean
-    SAMLConfigurerBean saml() {
-        return new SAMLConfigurerBean();
-    }
-
-    @Override
-	@Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
-        // @formatter:off
-        http
-        	.httpBasic()
+            http.httpBasic()
             .disable()
             .csrf()
             .disable()
             .anonymous()
+    
         .and()
             .apply(saml())
             .serviceProvider()
@@ -188,25 +151,37 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .refreshCheckInterval(0)
             .and()
                 .extendedMetadata() //(5)
-                .idpDiscoveryEnabled(true)
+                .idpDiscoveryEnabled(false)
             .and()
                 .keyManager() //(6)
                 .privateKeyDERLocation("classpath:/localhost.key.der")
                 .publicKeyPEMLocation("classpath:/localhost.cert")
-             .and()
-        .http()
-            .authorizeRequests()
-            .requestMatchers(saml().endpointsMatcher())
-            .permitAll()
-        .and()
-            .authorizeRequests()
-            .anyRequest()
-            .authenticated();
-        // @formatter:on
-    }
+                .and()
+                .http()
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                ;
+//        .and()
+//            .authorizeRequests()
+//            .antMatchers("/api/register").permitAll()
+//            .antMatchers("/api/activate").permitAll()
+//            .antMatchers("/api/authenticate").permitAll()
+//            .antMatchers("/api/account/reset_password/init").permitAll()
+//            .antMatchers("/api/account/reset_password/finish").permitAll()
+//            .antMatchers("/api/profile-info").permitAll()
+//            .antMatchers("/api/**").authenticated()
+//            .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
+//            .antMatchers("/v2/api-docs/**").permitAll()
+//            .antMatchers("/swagger-resources/configuration/ui").permitAll()
+//            .antMatchers("/swagger-ui/index.html").hasAuthority(AuthoritiesConstants.ADMIN);
 
-    @Bean
-    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
-        return new SecurityEvaluationContextExtension();
     }
+    
+
+
+//    @Bean
+//    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+//        return new SecurityEvaluationContextExtension();
+//    }
 }
